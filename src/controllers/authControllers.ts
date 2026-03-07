@@ -1,6 +1,6 @@
 import type { Request, Response } from "express";
 import bcrypt from "bcrypt"
-import authSchema from "../validators/authValidators.js"
+import authSchema from "../validators/authValidator.js"
 import { prisma } from "../config/db.js";
 import { type MyJwtPayload, generateToken } from "../utils/generateToken.js";
 
@@ -30,7 +30,7 @@ const register = async (req: Request, res: Response) => {
             data: {
                 name,
                 email,
-                passwordHash: hashedPassword!,
+                passwordHash: hashedPassword!             
             }
         })
 

@@ -40,8 +40,8 @@ model Service {
   id                String          @id @default(uuid())
   name              String
   type              ServiceType
-  UserId           String 
-  providerId        User          @relation(fields: [UserId], references: [id])
+  providerId            String 
+  provider            User     @relation(fields: [providerId], references: [id])
   durationMinutes   Int
   createdAt         DateTime      @default(now())
   avalibilityInWeek Avalibility[]

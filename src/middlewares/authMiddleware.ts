@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"
 import "dotenv/config"
 
 
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     let token;
     if (req.headers.authorization && req.headers.authorization.startsWith("Bearer")) {
         token = req.headers.authorization.split(" ")[1]
