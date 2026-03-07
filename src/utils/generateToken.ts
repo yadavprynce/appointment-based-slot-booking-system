@@ -2,11 +2,12 @@ import jwt from "jsonwebtoken"
 import "dotenv/config"
 import type { Response } from "express"
 
-interface JwtPayload {
+export interface MyJwtPayload {
     userId:string ,
-    role: "USER" |"SERVICE_PROVIDER"
+    role: "USER" |"SERVICE_PROVIDER",
+    providerId?:string | undefined //allowing undefined this time
 }
-export const generateToken = (jwtPayload:JwtPayload ,  res: Response) => {
+export const generateToken = (jwtPayload:MyJwtPayload ,  res: Response) => {
     const payload = jwtPayload
     const token = jwt.sign(payload , process.env.JWT_SECRET! , {
         expiresIn: "2h"

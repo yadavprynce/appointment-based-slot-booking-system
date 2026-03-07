@@ -1,8 +1,6 @@
-import type { Response ,NextFunction, Request } from "express"
+import type { Response, NextFunction, Request } from "express"
 import jwt from "jsonwebtoken"
 import "dotenv/config"
-
-
 
 
 const verifyToken = (req: Request, res: Response, next: NextFunction) => {
@@ -14,7 +12,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
         token = req.cookies.jwt
     }
 
-    if(!token){
+    if (!token) {
         return res.status(401).json({
             message: "No token provided"
         })
@@ -22,14 +20,15 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET!)
-        req.user = decoded
+        req.user = decoded;
 
         next();
-      }catch(error){
-        return  res.status(403).json({
-            message:"Invalid token provided"
+
+    } catch (error) {
+        return res.status(403).json({
+            message: "Invalid token provided"
         })
 
     }
-    
+
 }
