@@ -30,7 +30,7 @@ const register = async (req: Request, res: Response) => {
             data: {
                 name,
                 email,
-                passwordHash: hashedPassword!             
+                passwordHash: hashedPassword             
             }
         })
 

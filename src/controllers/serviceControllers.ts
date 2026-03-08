@@ -2,6 +2,7 @@ import type { Request, Response } from "express"
 import { createServiceSchema } from "../validators/createServicevalidator.js"
 import { prisma } from "../config/db.js";
 import { setAvalibilityValidator } from "../validators/setAvailibilityValidator.js";
+import { isValidServiceSchema } from "../validators/isValidServiceValidator.js";
 
 const createService = async (req: Request, res: Response) => {
     const parsedData = createServiceSchema.safeParse(req.body);
@@ -137,7 +138,7 @@ const setAvailibility = async (req: Request, res: Response) => {
         })
 
         res.status(201).json({
-            message:"Slot created successfully"
+            message: "Slot created successfully"
         })
 
     } catch (error: any) {
@@ -150,4 +151,51 @@ const setAvailibility = async (req: Request, res: Response) => {
 
 }
 
-export { createService, setAvailibility }
+
+const getServices = async (req: Request, res: Response) => {
+
+    const parsedData = isValidServiceSchema.safeParse(req.body)
+
+    if (!parsedData.success) {
+        return res.status(400).json({
+            message: "Invalid service type"
+        })
+    }
+
+    const { type } = parsedData.data;
+
+    try {
+        const services = await prisma.service.findMany({
+            where: {
+                type: type
+            }, include: {
+                provider: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json(services.map((service) => ({
+            id: service.id,
+            name: service.name,
+            type: service.type,
+            durationMinutes: service.durationMinutes,
+            providerName: service.provider.name
+
+        })))
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error"
+        })
+
+    }
+
+
+
+
+}
+
+
+export { createService, setAvailibility, getServices }
