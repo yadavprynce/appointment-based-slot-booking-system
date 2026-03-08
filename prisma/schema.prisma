@@ -54,6 +54,7 @@ model Avalibility {
   service   Service @relation(fields: [serviceId], references: [id])
   startTime String
   endTime   String
+  dayOfweek  Int
 }
 
 
