@@ -18,6 +18,8 @@ const verifyRole = (req: Request, res: Response, next: NextFunction) => {
   } catch (err) {
     return res.status(401).json("Invalid token");
   }
+
 };
 
 export default verifyRole;
+
