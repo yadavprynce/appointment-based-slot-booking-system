@@ -3,10 +3,11 @@ import verifyRole from "../middlewares/roleMiddleware.js"
 import { verifyToken } from "../middlewares/authMiddleware.js"
 import {createService , getAvailableSlots, getServices, setAvailibility} from "../controllers/serviceControllers.js"
 
-const serviceRoutes = express.Router()
+const serviceRouter = express.Router()
 
-serviceRoutes.post("/services" , verifyToken , verifyRole , createService )
-serviceRoutes.post("/services/:serviceId/availibility" , verifyToken , verifyRole ,setAvailibility )
-serviceRoutes.get("/services" , verifyToken , getServices )
-serviceRoutes.get("/services/:serviceId/slots" , getAvailableSlots)
-export default serviceRoutes
+serviceRouter.post("/services" , verifyToken , verifyRole , createService )
+serviceRouter.post("/services/:serviceId/availibility" , verifyToken , verifyRole ,setAvailibility )
+serviceRouter.get("/services" , verifyToken , getServices )
+serviceRouter.get("/services/:serviceId/slots" , getAvailableSlots)
+
+export default serviceRouter

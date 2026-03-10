@@ -25,7 +25,15 @@ export const bookAppointments = async (req: Request, res: Response) => {
     const date = validSlotId.slotId.split("_")[1] as string
     const startTimeOfBooking = validSlotId.slotId.split("_")[2]
 
+    //upon testing i was bookings from  previous date are still allowed to prevent that we are puttinh a check here
 
+    const today = new Date().toISOString().split("T")[0]!
+    if(today > date){
+        res.status(400).json({
+            message:"You can't book services on past dates"
+        })
+
+    }
 
     const dayOfWeek = new Date(date).getDay()
 
@@ -89,22 +97,22 @@ export const bookAppointments = async (req: Request, res: Response) => {
 
     const slotStartTime = toMin(slot.startTime as string)
     const slotEndTime = toMin(startTimeOfBooking!) + durationOfService!
-    
+
 
     const availableStartTime = toMin(validAvailibility.startTime)
     const availableEndTime = toMin(validAvailibility.endTime)
 
-    if(availableStartTime > slotStartTime || availableEndTime < slotEndTime){
+    if (availableStartTime > slotStartTime && availableEndTime < slotEndTime) {
         return res.status(400).json({
-            message:"Invalid slotId or time"
+            message: "Invalid slotId or time"
         })
     }
 
     //making sure provider cant book thier own sevice
 
-    if(req.user.userId === service.providerId){
+    if (req.user.userId === service.providerId) {
         return res.status(403).json({
-            message:"Providers can't book thier own services"
+            message: "Providers can't book thier own services"
         })
     }
 
@@ -122,7 +130,7 @@ export const bookAppointments = async (req: Request, res: Response) => {
 
             if (existing) throw new Error("Slot already booked")
 
-           const createAppointment = await tx.appointment.create({
+            const createAppointment = await tx.appointment.create({
                 data: {
                     userId: req.user.userId,
                     serviceId: serviceId,
@@ -130,7 +138,7 @@ export const bookAppointments = async (req: Request, res: Response) => {
                     startTime: startTimeOfBooking as string,
                     endTime: toTime(toMin(startTimeOfBooking!) + durationOfService!),
                     slotId: validSlotId.slotId,
-                    status:"Booked"
+                    status: "Booked"
 
                 }
 
@@ -154,4 +162,31 @@ export const bookAppointments = async (req: Request, res: Response) => {
 
 
 
+export const myAppointments = async (req: Request, res: Response) => {
+    const UserId = req.user.userId;
 
+    try {
+        const appointments = await prisma.appointment.findMany({
+            where: {
+                userId: UserId
+            }, include: {
+                service: true
+            }
+        })
+
+        const appointmentData = appointments.map((appointment) => ({
+            serviceName: appointment.service.name,
+            type: appointment.service.type,
+            date: appointment.date,
+            startTime: appointment.startTime,
+            endTime: appointment.endTime,
+            status: appointment.status
+        }))
+
+        res.status(200).json(appointmentData)
+    } catch (error) {
+        return res.status(500).json({
+            message: "Internal server error"
+        })
+    }
+}
